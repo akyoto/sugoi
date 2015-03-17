@@ -19,5 +19,6 @@ class Commands:
 		return getattr(self, name)
 
 # Run the command
-commands = Commands()
-commands[args[0]](args[1:])
+cmd = args[0]
+subArgs = args[1:]
+vars(Commands)[cmd](subArgs)
