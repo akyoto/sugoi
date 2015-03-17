@@ -19,7 +19,7 @@ class Commands:
 		def showMemory(grepString):
 			meminfo = Popen(["cat", "/proc/meminfo"], stdout = subprocess.PIPE)
 			grep = Popen(["grep", grepString], stdin = meminfo.stdout, stdout = subprocess.PIPE)
-			print(grep.communicate()[0].decode("utf-8"))
+			sys.stdout.write(grep.communicate()[0].decode("utf-8"))
 		
 		showMemory("Mem")
 		showMemory("Buffers")
