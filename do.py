@@ -43,9 +43,8 @@ class Commands:
 # Package installations
 class Install:
 	def riak(args):
-		call(["mkdir", "~/apps/"])
-		call(["git", "clone", "git://github.com/basho/riak.git", "~/apps/"])
-		os.chdir("~/apps/riak")
+		call(["git", "clone", "git://github.com/basho/riak.git"])
+		os.chdir("./riak")
 		call(["make", "rel"])
 
 # Help
