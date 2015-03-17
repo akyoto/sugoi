@@ -4,21 +4,49 @@
 from subprocess import call
 import sys
 
-args = sys.argv[1:]
-
+# Commands
 class Commands:
 	def ls(args):
-		call(["ls", "-la", "--color"])
+		call(["ls", "-la", "--color"] + args)
+		
+	def info(args):
+		call(["uname -a"])
+		call(["uptime"])
+		call(["free -m"])
+		
+	def update(args):
+		call(["sudo", "apt-get", "update"])
+		call(["sudo", "apt-get", "upgrade"])
 		
 	def install(args):
-		riakUrl = "http://s3.amazonaws.com/downloads.basho.com/riak/2.0/2.0.5/ubuntu/trusty/riak_2.0.5-1_amd64.deb"
 		print(args)
 		print(riakUrl)
 		
 	def __getitem__(self, name):
 		return getattr(self, name)
 
-# Run the command
+# Package installations
+class Install:
+	def riak(args):
+		riakUrl = "http://s3.amazonaws.com/downloads.basho.com/riak/2.0/2.0.5/ubuntu/trusty/riak_2.0.5-1_amd64.deb"
+		call(["wget", riakUrl])
+
+# Help
+def showHelp():
+	print("Commands:")
+	print(["\t" + cmd + "\n" for cmd in vars(Commands)])
+
+# Command line arguments
+args = sys.argv[1:]
+
+# Help?
+if !args:
+	showHelp()
+	sys.exit(1)
+
+# Parameters
 cmd = args[0]
 subArgs = args[1:]
+
+# Run the command
 vars(Commands)[cmd](subArgs)
