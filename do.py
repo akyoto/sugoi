@@ -13,7 +13,10 @@ class Commands:
 		call(["ls", "-la", "--color"] + args)
 		
 	def info(args):
+		print("Kernel:")
 		call(["uname", "-a"])
+		
+		print("Uptime:")
 		call(["uptime"])
 		
 		def showMemory(grepString):
@@ -21,6 +24,7 @@ class Commands:
 			grep = Popen(["grep", grepString], stdin = meminfo.stdout, stdout = subprocess.PIPE)
 			sys.stdout.write(grep.communicate()[0].decode("utf-8"))
 		
+		print("Memory:")
 		showMemory("Mem")
 		showMemory("Buffers")
 		showMemory("Cached")
