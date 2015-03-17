@@ -40,7 +40,7 @@ def showHelp():
 args = sys.argv[1:]
 
 # Help?
-if !args:
+if not args:
 	showHelp()
 	sys.exit(1)
 
