@@ -46,8 +46,6 @@ class Install:
 		call(["git", "clone", "git://github.com/basho/riak.git", "~/apps/"])
 		call(["cd", "~/apps/riak"])
 		call(["make", "rel"])
-cd riak
-make rel
 
 # Help
 def showHelp():
