@@ -3,6 +3,7 @@
 # Imports
 import subprocess
 import sys
+import os
 
 call = subprocess.call
 Popen = subprocess.Popen
@@ -44,7 +45,7 @@ class Install:
 	def riak(args):
 		call(["mkdir", "~/apps/"])
 		call(["git", "clone", "git://github.com/basho/riak.git", "~/apps/"])
-		call(["cd", "~/apps/riak"])
+		os.chdir("~/apps/riak")
 		call(["make", "rel"])
 
 # Help
