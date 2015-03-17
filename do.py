@@ -17,7 +17,9 @@ class Commands:
 		call(["uptime"])
 		meminfo = Popen(["cat", "/proc/meminfo"], stdout = subprocess.PIPE)
 		grep = Popen(["grep", "Mem"], stdin = meminfo.stdout, stdout = subprocess.PIPE)
-		grep.communicate()
+		print(grep.communicate())
+		
+		call(["cat", "/proc/meminfo", "|", "grep", "Mem"])
 		
 	def update(args):
 		call(["sudo", "apt-get", "update"])
