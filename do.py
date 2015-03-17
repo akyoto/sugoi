@@ -10,9 +10,9 @@ class Commands:
 		call(["ls", "-la", "--color"] + args)
 		
 	def info(args):
-		call(["uname -a"])
+		call(["uname", "-a"])
 		call(["uptime"])
-		call(["free -m"])
+		call(["free", "-m"])
 		
 	def update(args):
 		call(["sudo", "apt-get", "update"])
