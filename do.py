@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 # Imports
-from subprocess import call, Popen
+import subprocess
 import sys
+
+call = subprocess.call
+Popen = subprocess.Popen
 
 # Commands
 class Commands:
