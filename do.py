@@ -15,9 +15,15 @@ class Commands:
 	def info(args):
 		call(["uname", "-a"])
 		call(["uptime"])
-		meminfo = Popen(["cat", "/proc/meminfo"], stdout = subprocess.PIPE)
-		grep = Popen(["grep", "Mem"], stdin = meminfo.stdout, stdout = subprocess.PIPE)
-		print(grep.communicate()[0].decode("utf-8"))
+		
+		def showMemory(grepString):
+			meminfo = Popen(["cat", "/proc/meminfo"], stdout = subprocess.PIPE)
+			grep = Popen(["grep", grepString], stdin = meminfo.stdout, stdout = subprocess.PIPE)
+			print(grep.communicate()[0].decode("utf-8"))
+		
+		showMemory("Mem")
+		showMemory("Buffers")
+		showMemory("Cached")
 		
 	def update(args):
 		call(["sudo", "apt-get", "update"])
