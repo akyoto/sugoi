@@ -4,7 +4,7 @@
 from subprocess import call
 import sys
 
-cmd = sys.argv[1]
+args = sys.argv[1:]
 
 class Commands:
 	def ls(args):
@@ -20,4 +20,4 @@ class Commands:
 
 # Run the command
 commands = Commands()
-commands[cmd](args[2:])
+commands[args[0]](args[1:])
