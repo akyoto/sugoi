@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Imports
-from subprocess import call
+from subprocess import call, Popen
 import sys
 
 # Commands
@@ -12,7 +12,9 @@ class Commands:
 	def info(args):
 		call(["uname", "-a"])
 		call(["uptime"])
-		call(["free", "-m"])
+		meminfo = Popen(["cat", "/proc/meminfo"], stdout = subprocess.PIPE)
+		grep = Popen(["grep", "Mem"], stdin = meminfo.stdout, stdout = subprocess.PIPE)
+		grep.communicate()
 		
 	def update(args):
 		call(["sudo", "apt-get", "update"])
