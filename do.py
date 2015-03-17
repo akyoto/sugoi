@@ -42,8 +42,12 @@ class Commands:
 # Package installations
 class Install:
 	def riak(args):
-		riakUrl = "http://s3.amazonaws.com/downloads.basho.com/riak/2.0/2.0.5/ubuntu/trusty/riak_2.0.5-1_amd64.deb"
-		call(["wget", riakUrl])
+		call(["mkdir", "~/apps/"])
+		call(["git", "clone", "git://github.com/basho/riak.git", "~/apps/"])
+		call(["cd", "~/apps/riak"])
+		call(["make", "rel"])
+cd riak
+make rel
 
 # Help
 def showHelp():
