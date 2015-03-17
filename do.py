@@ -19,8 +19,7 @@ class Commands:
 		call(["sudo", "apt-get", "upgrade"])
 		
 	def install(args):
-		print(args)
-		print(riakUrl)
+		vars(Install)[args[0]](args[1:])
 		
 	def __getitem__(self, name):
 		return getattr(self, name)
