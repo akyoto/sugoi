@@ -16,7 +16,7 @@ class Commands:
 		print("Kernel:")
 		call(["uname", "-a"])
 		
-		print("Uptime:")
+		print("\nUptime:")
 		call(["uptime"])
 		
 		def showMemory(grepString):
@@ -24,7 +24,7 @@ class Commands:
 			grep = Popen(["grep", grepString], stdin = meminfo.stdout, stdout = subprocess.PIPE)
 			sys.stdout.write(grep.communicate()[0].decode("utf-8"))
 		
-		print("Memory:")
+		print("\nMemory:")
 		showMemory("Mem")
 		showMemory("Buffers")
 		showMemory("Cached")
