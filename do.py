@@ -29,6 +29,9 @@ class Commands:
 		sysctl("net.ipv4.tcp_tw_reuse=1")
 		sysctl("net.ipv4.tcp_moderate_rcvbuf=1")
 		
+		# TODO: Save settings permanently
+		# TODO: noatime in /etc/fstab
+		
 	def info(args):
 		print("Kernel:")
 		call(["uname", "-a"])
