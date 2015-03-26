@@ -76,7 +76,10 @@ class Install:
 def showHelp():
 	print("Commands:")
 	
-	for cmd in vars(Commands)]:
+	for cmd in vars(Commands):
+		if cmd[0] == "_":
+			continue
+		
 		print("\t" + cmd)
 
 # Command line arguments
