@@ -9,9 +9,22 @@ call = subprocess.call
 Popen = subprocess.Popen
 
 # Commands
-class Commands:
+class Commands:	
+	def info(args):
+		call(["uname", "-a"])
+		
 	def ls(args):
 		call(["ls", "-la", "--color"] + args)
+		
+	def memory(args):
+		def showMemory(grepString):
+			meminfo = Popen(["cat", "/proc/meminfo"], stdout = subprocess.PIPE)
+			grep = Popen(["grep", grepString], stdin = meminfo.stdout, stdout = subprocess.PIPE)
+			sys.stdout.write(grep.communicate()[0].decode("utf-8"))
+		
+		showMemory("Mem")
+		showMemory("Buffers")
+		showMemory("Cached")
 		
 	def tune(args):
 		def sysctl(param):
@@ -32,26 +45,13 @@ class Commands:
 		# TODO: Save settings permanently
 		# TODO: noatime in /etc/fstab
 		
-	def info(args):
-		call(["uname", "-a"])
+	def update(args):
+		call(["sudo", "apt-get", "update"])
+		call(["sudo", "apt-get", "upgrade"])
 		
 	def uptime(args):
 		print("\nUptime:")
 		call(["uptime"])
-		
-	def memory(args):
-		def showMemory(grepString):
-			meminfo = Popen(["cat", "/proc/meminfo"], stdout = subprocess.PIPE)
-			grep = Popen(["grep", grepString], stdin = meminfo.stdout, stdout = subprocess.PIPE)
-			sys.stdout.write(grep.communicate()[0].decode("utf-8"))
-		
-		showMemory("Mem")
-		showMemory("Buffers")
-		showMemory("Cached")
-		
-	def update(args):
-		call(["sudo", "apt-get", "update"])
-		call(["sudo", "apt-get", "upgrade"])
 		
 	def install(args):
 		vars(Install)[args[0]](args[1:])
@@ -61,6 +61,9 @@ class Commands:
 
 # Package installations
 class Install:
+	def make(args = []):
+		call(["sudo", "apt-get", "install", "make"])
+	
 	def riak(args = []):
 		# Dependencies
 		Install.make()
@@ -69,8 +72,7 @@ class Install:
 		os.chdir("./riak")
 		call(["make", "rel"])
 		
-	def make(args = []):
-		call(["sudo", "apt-get", "install", "make"])
+		# TODO: Switch to binary download
 
 # Help
 def showHelp():
