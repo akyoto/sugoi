@@ -9,7 +9,10 @@ call = subprocess.call
 Popen = subprocess.Popen
 
 # Commands
-class Commands:	
+class Commands:
+	def diskspace(args):
+		call(["df", "-h", "-x", "tmpfs"] + args)
+	
 	def info(args):
 		call(["uname", "-a"])
 		
