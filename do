@@ -22,7 +22,7 @@ class Commands:
 		call(["df", "-h", "-x", "tmpfs"] + args)
 	
 	def info(args):
-		call(["uname", "-a"])
+		call(["uname", "-a"] + args)
 		
 	def ls(args):
 		call(["ls", "-la", "--color"] + args)
@@ -62,7 +62,7 @@ class Commands:
 		
 	def uptime(args):
 		print("\nUptime:")
-		call(["uptime"])
+		call(["uptime"] + args)
 		
 	def install(args):
 		vars(Install)[args[0]](args[1:])
