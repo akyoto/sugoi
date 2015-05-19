@@ -15,8 +15,8 @@ class Commands:
 			print("Syntax: blockport YOUR_PORT_NUMBER")
 			return
 		
-		call(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT")
-		call(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP")
+		call(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
+		call(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
 	
 	def diskspace(args):
 		call(["df", "-h", "-x", "tmpfs"] + args)
