@@ -88,6 +88,10 @@ class Commands:
 		call(["uptime"] + args)
 		
 	def push(args):
+		if not args:
+			print("Syntax: push \"My commit message\"")
+			return
+		
 		call(["git", "commit", "-a", "-m", args[0]])
 		call(["git", "push"])
 		
