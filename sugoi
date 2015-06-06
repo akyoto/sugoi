@@ -14,7 +14,7 @@ class Commands:
 		Commands.diskusage(args)
 	
 	def diskusage(args):
-		os.system("df -h -x tmpfs / | awk '{print $5}' | grep [0-9]% | awk '{print \"Disk usage:\t" + Color.BOLD + "\" $1 \"" + Color.END + "\"}'")
+		os.system("df -h -x tmpfs / | awk '{print $5}' | grep [0-9]% | awk '{print \"Disk usage:\t\" $1}'")
 	
 	def disks(args):
 		call(["df", "-h", "-x", "tmpfs"] + args)
@@ -23,17 +23,17 @@ class Commands:
 		call(["lscpu"])
 		
 	def cpuusage(args):
-		os.system("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print \"CPU usage:\t" + Color.BOLD + "\" int(usage) \"%" + Color.END + "\"}'")
+		os.system("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print \"CPU usage:\t\" int(usage) \"%\"}'")
 		
 	def memory(args):
 		Commands.memoryusage(args)
 		Commands.freememory(args)
 		
 	def memoryusage(args):
-		os.system("free | grep Mem | awk '{print \"Memory usage:\t" + Color.BOLD + "\" int($3/$2 * 100.0) \"%" + Color.END + "\"}'")
+		os.system("free | grep Mem | awk '{print \"Memory usage:\t\" int($3/$2 * 100.0) \"%\"}'")
 		
 	def freememory(args):
-		os.system("free -t | grep 'buffers/cache' | awk '{print \"Free memory:\t" + Color.BOLD + "\"int($4/($3+$4) * 100)\"%" + Color.END + "\"}'")
+		os.system("free -t | grep 'buffers/cache' | awk '{print \"Free memory:\t\"int($4/($3+$4) * 100)\"%\"}'")
 		
 	def os(args):
 		call(["uname", "-a"] + args)
@@ -133,19 +133,6 @@ class Install:
 		call(["make", "rel"])
 		
 		# TODO: Switch to binary download
-
-class Color:
-	HEADER = '\033[95m'
-	OKBLUE = '\033[94m'
-	OKGREEN = '\033[92m'
-	WARNING = '\033[93m'
-	FAIL = '\033[91m'
-	END = '\033[0m'
-	BOLD = '\033[1m'
-	UNDERLINE = '\033[4m'
-	
-	def bold(msg):
-		return Color.BOLD + msg + Color.END;
 
 # Command line arguments
 args = sys.argv[1:]
