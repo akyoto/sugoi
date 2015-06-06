@@ -83,7 +83,7 @@ class Install:
 		scriptPath = os.path.realpath(__file__)
 		installPath = "/usr/bin/sugoi"
 		
-		if(os.path.isfile(installPath))
+		if os.path.isfile(installPath):
 			call(["sudo", "rm", installPath])
 		
 		call(["sudo", "ln", "-s", scriptPath, installPath])
