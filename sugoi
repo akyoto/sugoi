@@ -10,13 +10,20 @@ Popen = subprocess.Popen
 
 # Commands
 class Commands:
+	def redirectport(args):
+		if not args:
+			print("Syntax: redirectport FROM_REQUESTED_PORT TO_LOCAL_PORT")
+			return
+		
+		call(["sudo", "iptables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
+	
 	def blockport(args):
 		if not args:
 			print("Syntax: blockport YOUR_PORT_NUMBER")
 			return
 		
-		call(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
-		call(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
+		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
+		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
 	
 	def diskspace(args):
 		call(["df", "-h", "-x", "tmpfs"] + args)
@@ -72,6 +79,10 @@ class Commands:
 
 # Package installations
 class Install:
+	def sugoi(args = []):
+		scriptPath = os.path.realpath(__file__)
+		call(["sudo", "ln", "-s", scriptPath, "/usr/local/bin/sugoi"])
+	
 	def make(args = []):
 		call(["sudo", "apt-get", "install", "make"])
 	
