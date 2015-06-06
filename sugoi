@@ -81,8 +81,12 @@ class Commands:
 class Install:
 	def sugoi(args = []):
 		scriptPath = os.path.realpath(__file__)
-		call(["sudo", "rm", "/usr/bin/sugoi"])
-		call(["sudo", "ln", "-s", scriptPath, "/usr/bin/sugoi"])
+		installPath = "/usr/bin/sugoi"
+		
+		if(os.path.isfile(installPath))
+			call(["sudo", "rm", installPath])
+		
+		call(["sudo", "ln", "-s", scriptPath, installPath])
 	
 	def make(args = []):
 		call(["sudo", "apt-get", "install", "make"])
