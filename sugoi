@@ -13,8 +13,29 @@ class Commands:
 		Commands.memoryusage(args)
 		Commands.diskusage(args)
 	
+	def stats(args):
+		Commands.usage(args)
+		Commands.processcount(args)
+		Commands.tcpcount(args)
+		Commands.udpcount(args)
+	
+	def processcount(args):
+		os.system("ps -ef | wc -l | awk '{print \"Processes:\t\t\" ($1 - 1)}'")
+	
+	def tcp(args):
+		os.system("netstat -tnp")
+		
+	def tcpcount(args):
+		os.system("netstat -tn | expr `wc -l` - 2 | awk '{print \"TCP connections:\t\" $1}'")
+		
+	def udp(args):
+		os.system("netstat -unp")
+		
+	def udpcount(args):
+		os.system("netstat -un | expr `wc -l` - 2 | awk '{print \"UDP connections:\t\" $1}'")
+	
 	def diskusage(args):
-		os.system("df -h -x tmpfs / | awk '{print $5}' | grep [0-9]% | awk '{print \"Disk usage:\t\" $1}'")
+		os.system("df -h -x tmpfs / | awk '{print $5}' | grep [0-9]% | awk '{print \"Disk usage:\t\t\" $1}'")
 	
 	def disks(args):
 		call(["df", "-h", "-x", "tmpfs"] + args)
@@ -23,17 +44,17 @@ class Commands:
 		call(["lscpu"])
 		
 	def cpuusage(args):
-		os.system("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print \"CPU usage:\t\" int(usage) \"%\"}'")
+		os.system("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print \"CPU usage:\t\t\" int(usage) \"%\"}'")
 		
 	def memory(args):
 		Commands.memoryusage(args)
 		Commands.freememory(args)
 		
 	def memoryusage(args):
-		os.system("free | grep Mem | awk '{print \"Memory usage:\t\" int($3/$2 * 100.0) \"%\"}'")
+		os.system("free | grep Mem | awk '{print \"Memory usage:\t\t\" int($3/$2 * 100.0) \"%\"}'")
 		
 	def freememory(args):
-		os.system("free -t | grep 'buffers/cache' | awk '{print \"Free memory:\t\"int($4/($3+$4) * 100)\"%\"}'")
+		os.system("free -t | grep 'buffers/cache' | awk '{print \"Free memory:\t\t\"int($4/($3+$4) * 100)\"%\"}'")
 		
 	def os(args):
 		call(["uname", "-a"] + args)
