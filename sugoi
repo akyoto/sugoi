@@ -12,75 +12,75 @@ class Commands:
 		Commands.cpuusage(args)
 		Commands.memoryusage(args)
 		Commands.diskusage(args)
-	
+
 	def stats(args):
 		Commands.usage(args)
 		Commands.processcount(args)
 		Commands.tcpcount(args)
 		Commands.udpcount(args)
-	
+
 	def processcount(args):
 		os.system("ps -ef | wc -l | awk '{print \"Processes:\t\t\" ($1 - 1)}'")
-	
+
 	def tcp(args):
 		os.system("netstat -tnp")
-		
+
 	def tcpcount(args):
 		os.system("netstat -tn | expr `wc -l` - 2 | awk '{print \"TCP connections:\t\" $1}'")
-		
+
 	def udp(args):
 		os.system("netstat -unp")
-		
+
 	def udpcount(args):
 		os.system("netstat -un | expr `wc -l` - 2 | awk '{print \"UDP connections:\t\" $1}'")
-	
+
 	def diskusage(args):
 		os.system("df -h -x tmpfs / | awk '{print $5}' | grep [0-9]% | awk '{print \"Disk usage:\t\t\" $1}'")
-	
+
 	def disks(args):
 		call(["df", "-h", "-x", "tmpfs"] + args)
-		
+
 	def cpu(args):
 		call(["lscpu"])
-		
+
 	def cpuusage(args):
 		os.system("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print \"CPU usage:\t\t\" int(usage) \"%\"}'")
-		
+
 	def memory(args):
 		Commands.memoryusage(args)
 		Commands.freememory(args)
-		
+
 	def memoryusage(args):
 		os.system("free | grep Mem | awk '{print \"Memory usage:\t\t\" int($3/$2 * 100.0) \"%\"}'")
-		
+
 	def freememory(args):
 		os.system("free -t | grep 'buffers/cache' | awk '{print \"Free memory:\t\t\"int($4/($3+$4) * 100)\"%\"}'")
-		
+
 	def os(args):
 		call(["uname", "-a"] + args)
-		
+
 	def ls(args):
 		call(["ls", "-la", "--color"] + args)
-		
+
 	def redirectport(args):
 		if not args:
 			print("Syntax: redirectport FROM_REQUESTED_PORT TO_LOCAL_PORT")
 			return
-		
+
 		call(["sudo", "iptables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
-	
+
 	def blockport(args):
 		if not args:
 			print("Syntax: blockport YOUR_PORT_NUMBER")
 			return
-		
+
 		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
 		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
-		
+
 	def tune(args):
 		def sysctl(param):
 			call(["sudo", "sysctl", param])
-		
+
 		sysctl("vm.swappiness=0")
 		sysctl("net.ipv4.tcp_max_syn_backlog=40000")
 		sysctl("net.core.somaxconn=40000")
@@ -92,43 +92,51 @@ class Commands:
 		sysctl("net.ipv4.tcp_keepalive_intvl=30")
 		sysctl("net.ipv4.tcp_tw_reuse=1")
 		sysctl("net.ipv4.tcp_moderate_rcvbuf=1")
-		
+
 		# TODO: Save settings permanently
 		# TODO: noatime in /etc/fstab
-		
+
 	def update(args):
 		scriptDir = os.path.dirname(os.path.realpath(__file__))
 		os.chdir(scriptDir)
 		call(["git", "pull"])
 		call(["sudo", "apt-get", "update"])
 		call(["sudo", "apt-get", "upgrade"])
-		
+
 	def uptime(args):
 		call(["uptime"] + args)
-		
+
 	def push(args):
 		if not args:
 			print("Syntax: push \"My commit message\"")
 			return
-		
-		call(["git", "commit", "-a", "-m", args[0]])
+
+		call(["git", "add", "."])
+		call(["git", "commit", "-m", args[0]])
 		call(["git", "push"])
-		
+
+	def addKeyToServer(args):
+		if not args:
+			print("Syntax: addKeyToServer user@ip")
+			return
+
+		os.system("cat ~/.ssh/id_rsa.pub | ssh " + args[0] + " 'cat >> ~/.ssh/authorized_keys'")
+
 	def install(args):
 		vars(Install)[args[0]](args[1:])
-		
+
 	def help(args = []):
 		print("Commands:")
-		
+
 		commands = list(vars(Commands))
 		commands.sort()
-		
+
 		for cmd in commands:
 			if cmd[0] == "_":
 				continue
-			
+
 			print("\t" + cmd)
-		
+
 	def __getitem__(self, name):
 		return getattr(self, name)
 
@@ -136,23 +144,23 @@ class Install:
 	def sugoi(args = []):
 		scriptPath = os.path.realpath(__file__)
 		installPath = "/usr/bin/sugoi"
-		
+
 		if os.path.isfile(installPath):
 			call(["sudo", "rm", installPath])
-		
+
 		call(["sudo", "ln", "-s", scriptPath, installPath])
-	
+
 	def make(args = []):
 		call(["sudo", "apt-get", "install", "make"])
-	
+
 	def riak(args = []):
 		# Dependencies
 		Install.make()
-		
+
 		call(["git", "clone", "git://github.com/basho/riak.git"])
 		os.chdir("./riak")
 		call(["make", "rel"])
-		
+
 		# TODO: Switch to binary download
 
 # Command line arguments
