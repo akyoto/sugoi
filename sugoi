@@ -9,32 +9,32 @@ Popen = subprocess.Popen
 
 class Commands:
 	def usage(args):
-		Commands.cpuusage(args)
-		Commands.memoryusage(args)
-		Commands.diskusage(args)
+		Commands.cpuUsage(args)
+		Commands.memoryUsage(args)
+		Commands.diskUsage(args)
 
 	def stats(args):
 		Commands.usage(args)
-		Commands.processcount(args)
-		Commands.tcpcount(args)
-		Commands.udpcount(args)
+		Commands.processCount(args)
+		Commands.tcpCount(args)
+		Commands.udpCount(args)
 
-	def processcount(args):
+	def processCount(args):
 		os.system("ps -ef | wc -l | awk '{print \"Processes:\t\t\" ($1 - 1)}'")
 
 	def tcp(args):
 		os.system("netstat -tnp")
 
-	def tcpcount(args):
+	def tcpCount(args):
 		os.system("netstat -tn | expr `wc -l` - 2 | awk '{print \"TCP connections:\t\" $1}'")
 
 	def udp(args):
 		os.system("netstat -unp")
 
-	def udpcount(args):
+	def udpCount(args):
 		os.system("netstat -un | expr `wc -l` - 2 | awk '{print \"UDP connections:\t\" $1}'")
 
-	def diskusage(args):
+	def diskUsage(args):
 		os.system("df -h -x tmpfs / | awk '{print $5}' | grep [0-9]% | awk '{print \"Disk usage:\t\t\" $1}'")
 
 	def disks(args):
@@ -43,17 +43,17 @@ class Commands:
 	def cpu(args):
 		call(["lscpu"])
 
-	def cpuusage(args):
+	def cpuUsage(args):
 		os.system("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print \"CPU usage:\t\t\" int(usage) \"%\"}'")
 
 	def memory(args):
-		Commands.memoryusage(args)
-		Commands.freememory(args)
+		Commands.memoryUsage(args)
+		Commands.freeMemory(args)
 
-	def memoryusage(args):
+	def memoryUsage(args):
 		os.system("free | grep Mem | awk '{print \"Memory usage:\t\t\" int($3/$2 * 100.0) \"%\"}'")
 
-	def freememory(args):
+	def freeMemory(args):
 		os.system("free -t | grep 'buffers/cache' | awk '{print \"Free memory:\t\t\"int($4/($3+$4) * 100)\"%\"}'")
 
 	def os(args):
@@ -62,16 +62,16 @@ class Commands:
 	def ls(args):
 		call(["ls", "-la", "--color"] + args)
 
-	def redirectport(args):
+	def redirectPort(args):
 		if not args:
-			print("Syntax: redirectport FROM_REQUESTED_PORT TO_LOCAL_PORT")
+			print("Syntax: redirectPort FROM_REQUESTED_PORT TO_LOCAL_PORT")
 			return
 
 		call(["sudo", "iptables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
 
-	def blockport(args):
+	def blockPort(args):
 		if not args:
-			print("Syntax: blockport YOUR_PORT_NUMBER")
+			print("Syntax: blockPort YOUR_PORT_NUMBER")
 			return
 
 		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
@@ -96,6 +96,9 @@ class Commands:
 		# TODO: Save settings permanently
 		# TODO: noatime in /etc/fstab
 
+	def upgrade(args):
+		update(args)
+
 	def update(args):
 		scriptDir = os.path.dirname(os.path.realpath(__file__))
 		os.chdir(scriptDir)
@@ -114,6 +117,15 @@ class Commands:
 		call(["git", "add", "."])
 		call(["git", "commit", "-m", args[0]])
 		call(["git", "push"])
+
+	def downloadFromServer(args):
+		if not args or len(args) < 2:
+			print("Syntax: downloadFromServer USER@IP REMOTE_PATH")
+			return
+
+		user = args[0]
+		remotePath = args[1]
+		call(["scp", "-rp", user + ":" + remotePath, "."])
 
 	def addKeyToServer(args):
 		if not args:
