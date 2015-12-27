@@ -68,6 +68,7 @@ class Commands:
 			return
 
 		call(["sudo", "iptables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
+		call(["sudo", "ip6tables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
 
 	def blockPort(args):
 		if not args:
@@ -76,6 +77,9 @@ class Commands:
 
 		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
 		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
+
+		call(["sudo", "ip6tables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "::", "-j", "ACCEPT"])
+		call(["sudo", "ip6tables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
 
 	def tune(args):
 		def sysctl(param):
@@ -142,6 +146,14 @@ class Commands:
 		call(["sudo", "iptables", "-t", "mangle", "-F"])
 		call(["sudo", "iptables", "-F"])
 		call(["sudo", "iptables", "-X"])
+
+		call(["sudo", "ip6tables", "-P", "INPUT", "ACCEPT"])
+		call(["sudo", "ip6tables", "-P", "FORWARD", "ACCEPT"])
+		call(["sudo", "ip6tables", "-P", "OUTPUT", "ACCEPT"])
+		call(["sudo", "ip6tables", "-t", "nat", "-F"])
+		call(["sudo", "ip6tables", "-t", "mangle", "-F"])
+		call(["sudo", "ip6tables", "-F"])
+		call(["sudo", "ip6tables", "-X"])
 
 	def install(args):
 		vars(Install)[args[0]](args[1:])
