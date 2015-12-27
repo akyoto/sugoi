@@ -135,13 +135,13 @@ class Commands:
 		os.system("cat ~/.ssh/id_rsa.pub | ssh " + args[0] + " 'cat >> ~/.ssh/authorized_keys'")
 
 	def clearFirewall(args):
-		call("sudo", "iptables", "-P", "INPUT", "ACCEPT")
-		call("sudo", "iptables", "-P", "FORWARD", "ACCEPT")
-		call("sudo", "iptables", "-P", "OUTPUT", "ACCEPT")
-		call("sudo", "iptables", "-t", "nat", "-F")
-		call("sudo", "iptables", "-t", "mangle", "-F")
-		call("sudo", "iptables", "-F")
-		call("sudo", "iptables", "-X")
+		call(["sudo", "iptables", "-P", "INPUT", "ACCEPT"])
+		call(["sudo", "iptables", "-P", "FORWARD", "ACCEPT"])
+		call(["sudo", "iptables", "-P", "OUTPUT", "ACCEPT"])
+		call(["sudo", "iptables", "-t", "nat", "-F"])
+		call(["sudo", "iptables", "-t", "mangle", "-F"])
+		call(["sudo", "iptables", "-F"])
+		call(["sudo", "iptables", "-X"])
 
 	def install(args):
 		vars(Install)[args[0]](args[1:])
