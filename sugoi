@@ -134,6 +134,15 @@ class Commands:
 
 		os.system("cat ~/.ssh/id_rsa.pub | ssh " + args[0] + " 'cat >> ~/.ssh/authorized_keys'")
 
+	def clearFirewall(args):
+		call("sudo", "iptables", "-P", "INPUT", "ACCEPT")
+		call("sudo", "iptables", "-P", "FORWARD", "ACCEPT")
+		call("sudo", "iptables", "-P", "OUTPUT", "ACCEPT")
+		call("sudo", "iptables", "-t", "nat", "-F")
+		call("sudo", "iptables", "-t", "mangle", "-F")
+		call("sudo", "iptables", "-F")
+		call("sudo", "iptables", "-X")
+
 	def install(args):
 		vars(Install)[args[0]](args[1:])
 
@@ -161,19 +170,6 @@ class Install:
 			call(["sudo", "rm", installPath])
 
 		call(["sudo", "ln", "-s", scriptPath, installPath])
-
-	def make(args = []):
-		call(["sudo", "apt-get", "install", "make"])
-
-	def riak(args = []):
-		# Dependencies
-		Install.make()
-
-		call(["git", "clone", "git://github.com/basho/riak.git"])
-		os.chdir("./riak")
-		call(["make", "rel"])
-
-		# TODO: Switch to binary download
 
 # Command line arguments
 args = sys.argv[1:]
