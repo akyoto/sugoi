@@ -66,6 +66,12 @@ Enables SSH auto-login for the specified server. Key needs to be stored in `~/.s
 
 Downloads starts instantaneously if you added your SSH key to the server.
 
+### Redirect port
+```
+~$ s redirectPort 80 4000
+~$ s redirectPort 443 4001
+```
+
 ### Block a port
 ```
 ~$ s blockport 3000
