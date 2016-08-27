@@ -1,8 +1,18 @@
 # Sugoi
 Swiss army knife for linux.
 
+## Installation
+
 ```
-~$ sugoi
+./sugoi install sugoi
+```
+
+Add `alias s='sugoi'` in your `.bash_aliases` for more awesomeness.
+
+## Usage
+
+```
+~$ s
 Commands:
 	addKeyToServer
 	blockPort
@@ -34,4 +44,43 @@ Commands:
 	usage
 ```
 
-Use `alias s='sugoi'` in your `.bash_aliases` for more awesomeness.
+## Examples
+
+### git add + git commit + git push
+```
+~$ s push "Changed some stuff"
+```
+I personally use `alias sp='sugoi push'` to type it even faster.
+
+### Add SSH key to remote server
+```
+~$ s addKeyToServer admin@github.com
+```
+
+Enables SSH auto-login for the specified server. Key needs to be stored in `~/.ssh/id_rsa.pub`.
+
+### Download file from server
+```
+~$ s downloadFromServer admin@github.com /home/admin/database.dat
+```
+
+Downloads starts instantaneously if you added your SSH key to the server.
+
+### Block a port
+```
+~$ s blockport 3000
+```
+
+### Clear firewall rules
+```
+~$ s clearFirewall
+```
+
+
+### Show resource usage
+```
+~$ s usage
+CPU usage:          3%
+Memory usage:       34%
+Disk usage:         73%
+```
