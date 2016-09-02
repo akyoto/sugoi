@@ -155,6 +155,9 @@ class Commands:
 		call(["sudo", "ip6tables", "-F"])
 		call(["sudo", "ip6tables", "-X"])
 
+	def publicIP(args):
+		os.system("wget http://ipinfo.io/ip -qO -")
+
 	def install(args):
 		vars(Install)[args[0]](args[1:])
 
