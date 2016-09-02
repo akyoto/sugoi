@@ -156,7 +156,7 @@ class Commands:
 		call(["sudo", "ip6tables", "-X"])
 
 	def publicIP(args):
-		os.system("wget http://ipinfo.io/ip -qO -")
+		os.system("dig +short myip.opendns.com @resolver1.opendns.com")
 
 	def install(args):
 		vars(Install)[args[0]](args[1:])
