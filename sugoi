@@ -158,6 +158,13 @@ class Commands:
 	def publicIP(args):
 		os.system("dig +short myip.opendns.com @resolver1.opendns.com")
 
+	def portScan(args):
+		if not args:
+			print("Syntax: portScan HOST PORT_RANGE")
+			return
+
+		call(["nc", "-zv", args[0], args[1]])
+
 	def install(args):
 		vars(Install)[args[0]](args[1:])
 
