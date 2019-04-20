@@ -8,16 +8,41 @@ call = subprocess.call
 Popen = subprocess.Popen
 
 class Commands:
-	def usage(args):
-		Commands.cpuUsage(args)
-		Commands.memoryUsage(args)
-		Commands.diskUsage(args)
+	def redirectPort(args):
+		if not args:
+			print("Syntax: redirectPort FROM_REQUESTED_PORT TO_LOCAL_PORT")
+			return
 
-	def stats(args):
-		Commands.usage(args)
-		Commands.processCount(args)
-		Commands.tcpCount(args)
-		Commands.udpCount(args)
+		call(["sudo", "iptables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
+		call(["sudo", "ip6tables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
+
+	def blockPort(args):
+		if not args:
+			print("Syntax: blockPort YOUR_PORT_NUMBER")
+			return
+
+		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
+		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
+
+		call(["sudo", "ip6tables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "::", "-j", "ACCEPT"])
+		call(["sudo", "ip6tables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
+	
+	def clearPorts(args):
+		call(["sudo", "iptables", "-P", "INPUT", "ACCEPT"])
+		call(["sudo", "iptables", "-P", "FORWARD", "ACCEPT"])
+		call(["sudo", "iptables", "-P", "OUTPUT", "ACCEPT"])
+		call(["sudo", "iptables", "-t", "nat", "-F"])
+		call(["sudo", "iptables", "-t", "mangle", "-F"])
+		call(["sudo", "iptables", "-F"])
+		call(["sudo", "iptables", "-X"])
+
+		call(["sudo", "ip6tables", "-P", "INPUT", "ACCEPT"])
+		call(["sudo", "ip6tables", "-P", "FORWARD", "ACCEPT"])
+		call(["sudo", "ip6tables", "-P", "OUTPUT", "ACCEPT"])
+		call(["sudo", "ip6tables", "-t", "nat", "-F"])
+		call(["sudo", "ip6tables", "-t", "mangle", "-F"])
+		call(["sudo", "ip6tables", "-F"])
+		call(["sudo", "ip6tables", "-X"])
 
 	def processCount(args):
 		os.system("ps -ef | wc -l | awk '{print \"Processes:\t\t\" ($1 - 1)}'")
@@ -40,79 +65,6 @@ class Commands:
 	def disks(args):
 		call(["df", "-h", "-x", "tmpfs"] + args)
 
-	def cpu(args):
-		call(["lscpu"])
-
-	def cpuUsage(args):
-		os.system("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print \"CPU usage:\t\t\" int(usage) \"%\"}'")
-
-	def memory(args):
-		Commands.memoryUsage(args)
-		Commands.freeMemory(args)
-
-	def memoryUsage(args):
-		os.system("free | grep Mem | awk '{print \"Memory usage:\t\t\" int($3/$2 * 100.0) \"%\"}'")
-
-	def freeMemory(args):
-		os.system("free -t | grep 'buffers/cache' | awk '{print \"Free memory:\t\t\"int($4/($3+$4) * 100)\"%\"}'")
-
-	def os(args):
-		call(["uname", "-a"] + args)
-
-	def ls(args):
-		call(["ls", "-la", "--color"] + args)
-
-	def redirectPort(args):
-		if not args:
-			print("Syntax: redirectPort FROM_REQUESTED_PORT TO_LOCAL_PORT")
-			return
-
-		call(["sudo", "iptables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
-		call(["sudo", "ip6tables", "-t", "nat", "-A", "PREROUTING", "-i", "eth0", "-p", "tcp", "--dport", args[0], "-j", "REDIRECT", "--to-port", args[1]])
-
-	def blockPort(args):
-		if not args:
-			print("Syntax: blockPort YOUR_PORT_NUMBER")
-			return
-
-		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "127.0.0.1", "-j", "ACCEPT"])
-		call(["sudo", "iptables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
-
-		call(["sudo", "ip6tables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-s", "::", "-j", "ACCEPT"])
-		call(["sudo", "ip6tables", "-A", "INPUT", "-p", "tcp", "--dport", args[0], "-j", "DROP"])
-
-	def tune(args):
-		def sysctl(param):
-			call(["sudo", "sysctl", param])
-
-		sysctl("vm.swappiness=0")
-		sysctl("net.ipv4.tcp_max_syn_backlog=40000")
-		sysctl("net.core.somaxconn=40000")
-		sysctl("net.core.wmem_default=8388608")
-		sysctl("net.core.rmem_default=8388608")
-		sysctl("net.ipv4.tcp_sack=1")
-		sysctl("net.ipv4.tcp_window_scaling=1")
-		sysctl("net.ipv4.tcp_fin_timeout=15")
-		sysctl("net.ipv4.tcp_keepalive_intvl=30")
-		sysctl("net.ipv4.tcp_tw_reuse=1")
-		sysctl("net.ipv4.tcp_moderate_rcvbuf=1")
-
-		# TODO: Save settings permanently
-		# TODO: noatime in /etc/fstab
-
-	def upgrade(args):
-		update(args)
-
-	def update(args):
-		scriptDir = os.path.dirname(os.path.realpath(__file__))
-		os.chdir(scriptDir)
-		call(["git", "pull"])
-		call(["sudo", "apt-get", "update"])
-		call(["sudo", "apt-get", "upgrade"])
-
-	def uptime(args):
-		call(["uptime"] + args)
-
 	def push(args):
 		if not args:
 			print("Syntax: push \"My commit message\"")
@@ -122,48 +74,12 @@ class Commands:
 		call(["git", "commit", "-m", args[0]])
 		call(["git", "push"])
 
-	def downloadFromServer(args):
-		if not args or len(args) < 2:
-			print("Syntax: downloadFromServer USER@IP REMOTE_PATH")
-			return
-
-		user = args[0]
-		remotePath = args[1]
-		call(["scp", "-rp", user + ":" + remotePath, "."])
-
-	def addKeyToServer(args):
+	def sshKeyUpload(args):
 		if not args:
-			print("Syntax: addKeyToServer user@ip")
+			print("Syntax: sshKeyUpload user@ip")
 			return
 
 		os.system("cat ~/.ssh/id_rsa.pub | ssh " + args[0] + " 'cat >> ~/.ssh/authorized_keys'")
-
-	def clearFirewall(args):
-		call(["sudo", "iptables", "-P", "INPUT", "ACCEPT"])
-		call(["sudo", "iptables", "-P", "FORWARD", "ACCEPT"])
-		call(["sudo", "iptables", "-P", "OUTPUT", "ACCEPT"])
-		call(["sudo", "iptables", "-t", "nat", "-F"])
-		call(["sudo", "iptables", "-t", "mangle", "-F"])
-		call(["sudo", "iptables", "-F"])
-		call(["sudo", "iptables", "-X"])
-
-		call(["sudo", "ip6tables", "-P", "INPUT", "ACCEPT"])
-		call(["sudo", "ip6tables", "-P", "FORWARD", "ACCEPT"])
-		call(["sudo", "ip6tables", "-P", "OUTPUT", "ACCEPT"])
-		call(["sudo", "ip6tables", "-t", "nat", "-F"])
-		call(["sudo", "ip6tables", "-t", "mangle", "-F"])
-		call(["sudo", "ip6tables", "-F"])
-		call(["sudo", "ip6tables", "-X"])
-
-	def publicIP(args):
-		os.system("dig +short myip.opendns.com @resolver1.opendns.com")
-
-	def portScan(args):
-		if not args:
-			print("Syntax: portScan HOST PORT_RANGE")
-			return
-
-		call(["nc", "-zv", args[0], args[1]])
 
 	def install(args):
 		vars(Install)[args[0]](args[1:])
@@ -186,7 +102,7 @@ class Commands:
 class Install:
 	def sugoi(args = []):
 		scriptPath = os.path.realpath(__file__)
-		installPath = "/usr/bin/sugoi"
+		installPath = "/usr/local/bin/sugoi"
 
 		if os.path.isfile(installPath):
 			call(["sudo", "rm", installPath])
