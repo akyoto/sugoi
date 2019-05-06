@@ -1,4 +1,4 @@
-# sugoi
+# {name}
 
 Swiss army knife for linux.
 
